@@ -1,0 +1,7 @@
+cs50==9.2.2
+Flask==2.2.2
+Flask_Mail==0.9.1
+Werkzeug==2.2.2
+WTForms==3.0.1
+gunicorn
+psycopg2

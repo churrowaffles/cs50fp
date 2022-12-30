@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "autosize": "^5.0.1",
+    "dayjs": "^1.11.6",
+    "moment": "^2.29.4"
+  }
+}

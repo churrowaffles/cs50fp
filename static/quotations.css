@@ -1,0 +1,152 @@
+.index-head {
+    text-align: center;
+    margin: 2rem;
+}
+
+.index-head button {
+    background-color: white;
+    font-size: 1em;
+    font-weight: 500;
+    padding: 0.8rem;
+    border: 2px solid black;
+    border-radius: 2rem;
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.3);
+    transition-duration: 0.5s;
+}
+
+.index-head button:hover,
+.index-head button:focus {
+    font-weight: 700;
+    background-color: lightblue;
+    cursor: pointer;
+}
+
+.index-page {
+    display: flex;
+    justify-content: center;
+}
+
+.index-table {
+    table-layout: fixed;
+    font-size: 1em;
+    text-align: left;
+    width: 90%;
+    min-width: 700px;
+    background-color: rgb(248, 248, 248);
+}
+
+.index-table,
+.index-table th,
+.index-table td {
+    border-collapse: collapse;
+    padding: 0.5rem;
+}
+
+.index-table th {
+    border-top: 2px solid black;
+    border-bottom: 2px solid black;
+}
+
+.index-table td {
+    border-bottom: 1px solid grey;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+th.index-name {
+    width: 30%;
+}
+
+th.index-date {
+    width: 20%;
+}
+
+td.index-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.index-table tbody tr {
+    transition: all 0.3s;
+}
+
+.index-table tbody tr:hover {
+    background-color: lightblue;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.index-table form {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+td.index-actions {
+    padding: 0;
+}
+
+.index-actions button {
+    border: none;
+    background-color: transparent;
+    border-radius: 5px;
+    padding: 0.3rem;
+    margin-right: 0.5rem;
+    min-width: 1.8rem;
+    height: 1.8rem;
+    cursor: pointer;
+    opacity: 30%;
+}
+
+.convert-btn {
+    opacity: 30%;
+    background-color: transparent;
+    border: solid 1px black;
+    border-radius: 1rem;
+    font-size: 1em;
+    transition: font-weight 0.3s;
+    padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+    margin-left: 1rem;
+}
+
+.convert-btn:hover {
+    font-weight: 700;
+}
+
+.index-actions button:hover, .convert-btn:hover {
+    opacity: 100%;
+    cursor: pointer;
+}
+
+.payment-status {
+    appearance: none;
+    border: none;
+    height: 3.4rem;
+    width: 20rem;
+    padding: 0 1.5rem 0 0.8rem;
+    margin-left: 1rem;
+    overflow: hidden;
+    display: flex;
+    flex-grow: 1;
+    font-size: 1em;
+}
+
+.payment-status:hover {
+    cursor: pointer;
+}
+
+.payment-status:hover ~ .dropdown-btn {
+    opacity: 90%;
+}
+
+.index-table .dropdown-btn {
+    position: absolute;
+    z-index: 0;
+    right: 0.8rem;
+    width: 0.8rem;
+    pointer-events: none;
+    opacity: 30%;
+}

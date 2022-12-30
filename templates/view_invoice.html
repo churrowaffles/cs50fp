@@ -1,0 +1,22 @@
+{% extends "view_file.html" %}
+
+{% block title %}
+    Invoice
+{% endblock %}
+
+{% block head %}
+<h3> <a href="{{url_for('invoices')}}">&#60;&#60; &nbsp;Back to your invoices</a></h3>
+<p> You are currently in Invoice: <span class="file-name">{{ details['title'] }}</span>.</p>
+{% endblock head %}
+
+{% block topinfo %}<p class="quote-top-name"> INVOICE </p>{% endblock topinfo %}
+
+{% block ref %}<p class="mid-info-details-left-text">Invoice No.: </p>{% endblock ref %}
+
+{% block date %}<p class="mid-info-details-left-text">Due date: </p>{% endblock date %}
+
+{% block date_details %}
+<p class="mid-info-details-right-text quote-edit" id="due-date">{{ details['due_date'] }}</p>
+<textarea class="hidden-form" name="due-date"></textarea>
+{% endblock date_details %}
+

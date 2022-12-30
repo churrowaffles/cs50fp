@@ -1,0 +1,25 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Verify Email
+{% endblock %}
+
+{% block main %}
+<form action="/verify" method="post" class="verify-form">
+    <h2 class="verify-head"> Verify your email </h2>
+    <p class="verify-subhead"> Please check your email for a One-Time-Password. </p>
+    <div class="verify-body-wrapper">
+        {% if sent %}
+        <div class="verify-sent">
+            <p> Please note that it will expire in <span style="font-weight:bold">10 minutes</span>.</p>
+        </div>
+        {% endif %}
+        <div>
+            <input class="verify-input" type="text" name="code" maxlength="6">
+            <button class="verify-submitbtn" type="submit" name="submit" value="submit"> Submit OTP </button>
+        </div>
+        <button class="verify-sendagain" type="submit" name="resend" value="resend"> Click here to send OTP again! </button>
+    </div>
+</form>
+
+{% endblock %}

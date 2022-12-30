@@ -1,0 +1,34 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block main %}
+<div class="register-container">
+    <h2 class="register-head">
+        Log in to your <span class="register-appname">invoicer.</span> account.
+    </h2>
+    <div class="register-body-wrapper">
+        <form action="/login" class="register-body" method="post">
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks">
+                    {{ log_form.username.label(class="register-labels req") }}
+                    {{ log_form.username(class="register-input", required="", autofocus="", autocomplete="off")}}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks">
+                    {{ log_form.password.label(class="register-labels req") }}
+                    {{ log_form.password(class="register-input", required="", autocomplete="off")}}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <button type="submit" class="register-submitbtn">LOGIN</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

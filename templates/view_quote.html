@@ -1,0 +1,32 @@
+{% extends "view_file.html" %}
+
+{% block title %}
+    Quotation
+{% endblock %}
+
+{% block head %}
+<h3> <a href="{{url_for('quotations')}}">&#60;&#60; &nbsp;Back to your quotations</a></h3>
+<p> You are currently in Quotation: <span class="file-name">{{ details['title'] }}</span>.</p>
+{% endblock head %}
+
+{% block extrabuttons %}
+<button type="submit" class="file-actions-btn" id="invoicer-btn" name="convert" value="convert">invoicer!</button>
+{% endblock extrabuttons %}
+
+{% block topinfo %}
+<p class="quote-top-name"> QUOTATION </p>
+{% endblock topinfo %}
+
+{% block ref %}
+<p class="mid-info-details-left-text">Quotation No.: </p>
+{% endblock ref %}
+
+{% block date %}
+<p class="mid-info-details-left-text">Valid till: </p>
+{% endblock date %}
+
+{% block date_details %}
+<p class="mid-info-details-right-text quote-edit" id="valid-till">{{ details['valid_till'] }}</p>
+<textarea class="hidden-form" name="valid-till"></textarea>
+{% endblock date_details %}
+

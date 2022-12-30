@@ -1,0 +1,57 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Quotation
+{% endblock %}
+
+{% block script %}
+<script src="../static/index.js"></script>
+{% endblock %}
+
+{% block main %}
+<div class="main-page-grid">
+    <h1 class="main-grid-head"> Hello {{name}}!</h1>
+    <div class="main-grid main-grid-display summary">
+        You have {{unpaid['COUNT(status)']}} unpaid invoices.<br>
+        Total amount: ${{unpaid['ifnull(SUM(total_money), 0)']}}
+    </div>
+    {% if quotations %}
+    <div class="main-grid main-grid-display latest" id="quotations">
+        <h3> Latest quotations </h3>
+        <table class="latest-table">
+            {% for quote in quotations %}
+            <tr>
+                <td class="latest-table-title">{{quote['title']}}</td>
+                <input type="hidden" name="id" value="{{quote['id']}}">
+                <td class="latest-table-date">{{quote['last_saved']}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    <div class="main-grid latest not-available" id="home_create_quote">
+        <h3>No quotations available!</h3>
+        <div>Click here to create new invoice</div>
+    </div>
+    {% endif %}
+    {% if invoices %}
+    <div class="main-grid latest" id="invoices">
+        <h3> Latest invoices </h3>
+        <table class="latest-table">
+            {% for invoice in invoices %}
+            <tr>
+                <td class="latest-table-title">{{invoice['title']}}</td>
+                <input type="hidden" name="id" value="{{invoice['id']}}">
+                <td class="latest-table-date">{{invoice['last_saved']}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    {% else %}
+    <div class="main-grid latest not-available" id="home_create_invoice">
+        <h3>No invoices available!</h3>
+        <div>Click here to create new invoice</div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Register
+{% endblock %}
+
+{% block main %}
+<div class="register-container">
+    <h2 class="register-head">
+        Create an <span class="register-appname">invoicer.</span> account.
+    </h2>
+    <div class="register-body-wrapper">
+        <form action="/register" class="register-body" method="post">
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks">
+                    {{ reg_form.username.label(class="register-labels req") }}
+                    {{ reg_form.username(class="register-input", required="", autofocus="", autocomplete="off")}}
+
+                    {% for error in reg_form.username.errors %}
+                        <p class="error-msg">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks">
+                    {{ reg_form.password.label(class="register-labels req") }}
+                    {{ reg_form.password(class="register-input", required="", autocomplete="off")}}
+
+                    {% for error in reg_form.password.errors %}
+                        <p class="error-msg">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks">
+                    {{ reg_form.email.label(class="register-labels req") }}
+                    {{ reg_form.email(class="register-input", required="")}}
+
+                    {% for error in reg_form.email.errors %}
+                        <p class="error-msg">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks">
+                    {{ reg_form.name.label(class="register-labels req") }}
+                    {{ reg_form.name(class="register-input", required="")}}
+
+                    {% for error in reg_form.name.errors %}
+                        <p class="error-msg">{{ error }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <div class="register-blocks register-blocks-details">
+                    {{ reg_form.details.label(class="register-labels") }}
+                    {{ reg_form.details(class="register-input register-input-details")}}
+                </div>
+            </div>
+
+            <div class="register-blocks-wrapper">
+                <button type="submit" class="register-submitbtn">REGISTER NOW</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

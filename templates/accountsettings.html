@@ -1,0 +1,38 @@
+{% extends "template.html" %}
+
+{% block title %}
+    Account Settings
+{% endblock %}
+
+{% block script %}
+<script src="../static/accountsettings.js"></script>
+{% endblock %}
+
+{% block main %}
+<form method="post">
+    <div class="accountsettings-container">
+        <h1 class="accountsettings-head"> Account Settings </h1>
+
+        <div class="left-col"> <label for="acc-details">Username</label> </div>
+        <div class="right-col darker"> <p>{{user['username']}}</p> </div>
+
+        <div class="left-col"> <label for="acc-details">Email</label> </div>
+        <div class="right-col darker"> <p>{{user['email']}}</p> </div>
+
+        <div class="left-col"> <label for="acc-details">Password</label> </div>
+        <div class="right-col darker"> <a href="{{url_for('change_password')}}">Change your password</a> </div>
+
+        <div class="left-col"> <label for="acc-name">Name</label> </div>
+        <div class="right-col"> <input type="text" name="acc-name" value="{{user['name']}}"> </div>
+
+        <div class="left-col">
+            <label for="acc-details">Company Details<br>
+            <span class="small">(e.g. Address, Contact No.)</span>
+            </label>
+        </div>
+        <div class="right-col"> <textarea name="acc-details" id="acc-details"">{{user['details']}}</textarea> </div>
+
+        <div class="accountsettings-submit"> <button> Update details </button> </div>
+    </div>
+</form>
+{% endblock %}
