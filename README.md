@@ -77,7 +77,7 @@
     - To perform CRUD operations for the application's database.
 
 - `day.js` (https://day.js.org/)
-    - To display relative timewhere users can see how long ago each file was last saved.
+    - To display relative time where users can see how long ago each file was last saved.
 
 - `html2pdf.js` (https://ekoopmans.github.io/html2pdf.js/)
     - To convert the HTML canvas into a PDF file format.
