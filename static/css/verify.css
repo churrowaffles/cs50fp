@@ -1,0 +1,68 @@
+.verify-head {
+    text-align: center;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.verify-subhead {
+    text-align: center;
+    padding: 0;
+    margin: 0;
+}
+
+.verify-body-wrapper {
+    display: block;
+    text-align: center;
+}
+
+.verify-input {
+    padding: 8px;
+    font-weight: 700;
+    border-radius: 5px;
+    border: solid 1px rgb(216, 216, 216);
+    line-height: 21px;
+    font-family: Inter Tight, Arial;
+    resize: none;
+    color: black;
+}
+
+.verify-submitbtn {
+    text-align: center;
+    font-size: 0.9em;
+    font-weight: 700;
+    padding: 8px;
+    margin-top: 1rem;
+    background-color: lightblue;
+    color: navy;
+    border: solid 2px navy;
+    border-radius: 6px;
+    box-shadow: 1px 1px 12px rgba(255, 255, 255, 0.8);
+}
+
+.verify-submitbtn:hover{
+    background-color: navy;
+    color: lightblue;
+}
+
+.verify-sent {
+    margin: 1rem 0 0.5rem 0;
+    line-height: 2em;
+    font-family:monospace;
+    color: navy;
+}
+
+.verify-sendagain {
+    text-align: center;
+    font-family:monospace;
+    font-size: 1em;
+    font-weight: 700;
+    padding: 8px;
+    margin-top: 20px;
+    border: none;
+    border-radius: 6px;
+    box-shadow: 1px 1px 3px rgba(104, 104, 104, 0.8);
+}
+
+.verify-sendagain:hover {
+    background-color: rgb(178, 178, 178);
+}
