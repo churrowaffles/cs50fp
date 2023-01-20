@@ -2,14 +2,14 @@
 const keyCodesToAllow = [8, 37, 38, 39, 40]
 
 $(document).ready(function(){
-// Get plain text only when pasting (ps: plain text to include whitespace if possible)
+// Get plain text only when pasting on keyboard
     $('body').on('paste', '.quote-edit', function(e) {
         e.preventDefault()
         let text = (e.clipboardData || e.originalEvent.clipboardData).getData('text/plain')
         document.execCommand('insertText', false, text);
     });
 
-    // Form submit as "EDIT" button
+    //
     const editBtn = $('#editQuote-btn')
     editBtn.click(function(e){
         if (editBtn.html() === "EDIT") {
@@ -20,8 +20,7 @@ $(document).ready(function(){
             $('#exportPDF-btn').prop('disabled', true).css('opacity', '50%').css('cursor', 'auto');
             editBtn.html("SAVE");
         } else if (editBtn.html() === "SAVE") {
-        // as "SAVE" button
-            // For all <p> content with the class ".quote-edit", copy from <p>(using id) to respective hidden textarea(using name) to submit to backend
+            // Copy user input into their respective textareas to submit as form
             // INFO: textarea uses '\r\n' for line breaks instead of html <br>
             $('p.quote-edit, #total-money').each(function(){
                 let user_input = ($(this).attr('id'))
@@ -32,13 +31,12 @@ $(document).ready(function(){
                 $(`[name=${user_input}]`).html(text.replaceAll('<div>', '\r\n').replaceAll('</div>', '').replaceAll('<br>', '\r\n'));
             })
 
-            // For each row in the table, create textareas with an incremental value in name (e.g. name=row1, name=row2) to send to backend
+            // Create incremental textareas for each table row to submit as form
             let incremental = 1;
             $('#items-table tbody tr').each(function() {
                 console.log($(this))
                 $(this).find('.item-total').html($(this).find('.item-total').html().replace(/\D/g, ''));
                 for (let i = 0; i < this.children.length; i++) {
-                    // Create a new textarea to submit for each cell
                     let new_row = document.createElement("textarea");
                     new_row.setAttribute('name', `row${incremental}`);
                     new_row.setAttribute('class', 'hidden-form');
@@ -84,30 +82,23 @@ $(document).ready(function(){
     });
 
 
-    // ALLOW ONLY NUMBERS INPUT FOR 'INDEX' AND 'UNIT'
-    $('#items-table tbody').on('keydown', '.item-index, .item-unit', function(e){
+    // Allow only numbers input for 'Index' and 'Unit'
+    $('#items-table tbody').on('keydown', '.item-index, .item-unit, .item-rate', function(e){
         if (isNaN(e.key) && !keyCodesToAllow.includes(e.keyCode)) {
             return false;
         }
     });
 
-    // ALLOW ONLY NUMBERS AND "$" SIGN INPUT FOR 'RATE'
-    $('#items-table tbody').on('keydown', '.item-rate', function(e){
-        if (isNaN(e.key) && !keyCodesToAllow.includes(e.keyCode) && e.key !== "$") {
-            return false;
-        }
-    });
-
-    // UPDATE RATES REAL-TIME
+    // Update rates real-time
     $('#items-table tbody').on('blur', '.item-unit, .item-rate', function(){
-        // FOR CURRENT ROW
+        // for current row
         currentRow = $(this).parent()
         let unit = currentRow.find('.item-unit').html().replace(/\D/g, '') || 0;
         let rate = currentRow.find('.item-rate').html().replace(/\D/g, '') || 0;
         let total = unit * rate;
         currentRow.find('.item-total').html(total);
 
-        // FOR WHOLE TABLE
+        // for whole table
         let totaltotal = 0;
         $('#items-table tbody .item-total').each(function() {
             if ($(this).html()) {
@@ -117,13 +108,13 @@ $(document).ready(function(){
         $('#total-money').html(totaltotal);
     });
 
-    // DELETE ROW BUTTON
-    // - Delete Function
+// DELETE ROW BUTTON
+    // Delete Function
     $('tbody').on('click', '.row-delete', function(){
         $(this).parent().remove();
     })
 
-    // - Hover Effects
+    // Hover Effects
     $('tbody').on('mouseenter', '.row-delete', function(){
         $(this).parent().find('td').css('background-color', 'rgb(179, 179, 179)')
     }).on('mouseleave', '.row-delete', function() {

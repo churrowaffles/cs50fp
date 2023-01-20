@@ -24,12 +24,11 @@ function goToRespective(type, triggers) {
 
 
 document.addEventListener("DOMContentLoaded", function(){
-
-    // TEXT AREA AUTOSIZE
+    // Text area autosize
     autosize($('textarea'));
     $('textarea').css("resize", "none");
 
-    // SIDE BAR
+    // Side bar
     const sidebarWrapper = document.getElementById("sidebar-wrapper")
     const pageContents = document.querySelector(".page")
 
@@ -43,7 +42,7 @@ document.addEventListener("DOMContentLoaded", function(){
         pageContents.style.paddingLeft = "0rem";
     });
 
-    // CREATE QUOTE AND INVOICE - POP-UP BOXES
+    // Create quotation/invoices - POP-UP BOXES
     createQuotePopUpBox = $('#create_quote_popup')
     popUp($('#create_quote, #index_create_quote, #home_create_quote'), createQuotePopUpBox, "flex");
     popUp($('#close_quote, #popup-btn'), createQuotePopUpBox, "none");
@@ -51,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function(){
     popUp($('#create_invoice, #index_create_invoice, #home_create_invoice'), createInvoicePopUpBox, "flex");
     popUp($('#close_invoice, #popup-btn'), createInvoicePopUpBox, "none");
 
-    // FLASH MESSAGES DURATION
+    // Flash messages duration
     $('.flash-msg').delay(2000).slideUp(600)
 
 });

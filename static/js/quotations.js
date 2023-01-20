@@ -13,11 +13,10 @@ function editIndex(type) {
 document.addEventListener("DOMContentLoaded", function(){
 
     relativeTime($('tbody .index-date'));
-
-    // Links user to selected row
     goToRespective('quotation', $('#quotation-index tbody tr'))
     goToRespective('invoice', $('#invoice-index tbody tr'))
 
+    // Set colour for respective payment status
     $('.payment-status').click(function(e) {
         e.stopPropagation();
     });
@@ -36,9 +35,9 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     })
 
-    // Edit Quotation Name
+    // Edit quotation/invoice name
     editIndex('quote');
     editIndex('invoice');
-
+    // Close pop-up box
     popUp($('#close_quote, #close_invoice, #quote_popup-btn'), $('.popup-full'), "none");
 });

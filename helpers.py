@@ -13,7 +13,7 @@ db = SQL("sqlite:///invoicer.db")
 #                         LOGIN/EMAIL AUTH + LOGIN REDIRECT                    #
 # ---------------------------------------------------------------------------- #
 
-def login_required(f):
+def login_and_verification_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not session.get("id"):
@@ -22,6 +22,16 @@ def login_required(f):
             return render_template("verify.html")
         return f(*args, **kwargs)
     return decorated_function
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get("id"):
+            return redirect(url_for("login"))
+        return f(*args, **kwargs)
+    return decorated_function
+
 
 def redirect_if_logged_in(f):
     @wraps(f)

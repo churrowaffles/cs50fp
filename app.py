@@ -4,7 +4,7 @@ import sqlite3
 from cs50 import SQL
 from wsgiref import validate
 from flask import Flask, redirect, render_template, request, session, flash, url_for
-from helpers import RegistrationForm, LoginForm, ResetForm, login_required, redirect_if_logged_in, copy_sqlscripts
+from helpers import RegistrationForm, LoginForm, ResetForm, login_required, login_and_verification_required, redirect_if_logged_in, copy_sqlscripts
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mail import Mail, Message
 from datetime import datetime, timedelta
@@ -18,7 +18,6 @@ app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = os.environ.get("CS50FP_MAIL_USERNAME")
 app.config['MAIL_PASSWORD'] =  os.environ.get("CS50FP_MAIL_PASSWORD")
 app.config['MAIL_USE_SSL'] = True
-
 mail = Mail(app)
 
 # Configuration
@@ -28,7 +27,7 @@ app.config['PERMANENT_SESSION_LIFETIME'] = 36000
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///invoicer.db")
 
-# Constant variable
+# Constant variables
 TEN_MINUTES = timedelta(minutes=10)
 
 # ---------------------------------------------------------------------------- #
@@ -43,7 +42,7 @@ def register():
     # Validate user input
     if request.method == 'POST':
 
-        # Backend check for form validation (in the case where user's frontend is altered)
+        # Backend form validation
         if not reg_form.validate():
             flash("Please ensure valid input", "error")
             return render_template("register.html", reg_form=reg_form)
@@ -84,8 +83,7 @@ def login():
             flash("Invalid username or password", "error")
             return render_template("login.html", log_form=log_form)
 
-        # Log user's session and check for user's email verification,
-        # redirect to home page
+        # Log user's session and check for user's email verification
         session['id'] = userdata[0]['id']
         flash("Login Successful!", "info")
         if not userdata[0]['emailverification']:
@@ -98,18 +96,17 @@ def login():
 
 
 @app.route("/verify", methods=['GET', 'POST'])
+@login_required
 def verify():
     # Redirect users if not logged in / already verified
-    if not session.get("id"):
-        return redirect(url_for('login'))
-
     if session.get("verified"):
         return redirect(url_for('index'))
 
-    # Check if user's OTP input is accurate and within time limit
     if request.method == 'POST':
         user_email = db.execute("SELECT email FROM user WHERE id = ?", session['id'])[0]['email']
+
         if request.form.get('submit'):
+            # Check OTP validity
             input_code = request.form.get('code')
             user_code = db.execute("SELECT * FROM otp WHERE user_id = ?", session['id'])[0]
             time_diff = datetime.now() - datetime.strptime(user_code['timestamp'], "%Y-%m-%d %H:%M:%S")
@@ -130,7 +127,7 @@ def verify():
             flash("Your email has been successfully verified!", "info")
             return redirect(url_for('index'))
 
-        # Create a temporary number as code and store in DB
+        # Create a temporary number as OTP
         code = randint(100000, 999999)
         db.execute("INSERT OR REPLACE INTO otp(user_id, otp, timestamp) VALUES(?, ?, ?)", session['id'], code, datetime.now())
 
@@ -147,7 +144,7 @@ def verify():
 
 
 @app.route("/")
-@login_required
+@login_and_verification_required
 def index():
     name = db.execute("SELECT name FROM user WHERE id = ?", session['id'])[0]['name']
     quotations = db.execute("SELECT id, title, last_saved FROM quote WHERE user_id = ? ORDER BY last_saved DESC LIMIT 5", session['id'])
@@ -157,21 +154,20 @@ def index():
 
 
 @app.route("/quotations/create", methods=['POST'])
-@login_required
+@login_and_verification_required
 def create_quote():
     if request.method == 'POST':
-        # Retrieve quotation_name from form and create a template quotation in database with user info
+        # Create a template quotation with user info & quotation name
         quotation_name = request.form.get('quotation_name')
         userdata = db.execute("SELECT * FROM user WHERE id = ?", session['id'])[0]
         quote_id = db.execute("INSERT INTO quote (user_id, title, sender_name, sender_details) VALUES (?, ?, ?, ?)", userdata['id'], quotation_name, userdata['name'], userdata['details'])
         db.execute("INSERT INTO quote_items (quote_id, table_index, unit, rate) VALUES (?, ?, ?, ?)", quote_id, '01', '1', '0.00')
 
-        # Pass in quote_id into url_for('view_quote')
         return redirect(url_for('view_quote', quote_id=quote_id))
 
 
 @app.route("/quotations", methods=['GET', 'POST'])
-@login_required
+@login_and_verification_required
 def quotations():
     if request.method == 'POST':
         quote_id = request.form.get('id')
@@ -182,13 +178,16 @@ def quotations():
                 db.execute("DELETE FROM quote WHERE id = ?", quote_id)
                 return redirect(url_for('quotations'))
 
+            # Edit quotation name
             if request.form.get('edit'):
                 quote_name = request.form.get('name')
                 db.execute("UPDATE quote SET title = ?, last_saved = ? WHERE id = ?", quote_name, datetime.now(), quote_id)
 
+            # Duplicate quotation
             if request.form.get('copy'):
                 copy_sqlscripts('copyquote', 'copyquoteitems', quote_id)
 
+            # Convert quotation to invoice
             if request.form.get('convert'):
                 copy_sqlscripts('convertquote', 'convertquoteitems', quote_id)
                 return redirect(url_for('invoices'))
@@ -201,15 +200,15 @@ def quotations():
 
 
 @app.route("/quotations/<int:quote_id>", methods=['GET', 'POST'])
-@login_required
+@login_and_verification_required
 def view_quote(quote_id):
-    # Validate if user is authorised to see this quote, otherwise go back to quote overview page
+    # Validate if user is authorised to see this quote
     user_id = db.execute("SELECT user_id FROM quote WHERE id = ?", quote_id)
     if len(user_id) != 1 or user_id[0]['user_id'] != session['id']:
         return redirect(url_for('quotations'))
 
     if request.method == 'POST':
-        # Update and submit form elements by user
+        # Update and submit details of quotation by user
         if request.form.get("save"):
             form = dict(request.form.items())
             db.execute("""UPDATE quote
@@ -218,7 +217,7 @@ def view_quote(quote_id):
                         form['sender-name'], form['sender-details'], form['recipient-details'], form['project-details'], form['send-date'], form['ref'], form['valid-till'], form['total-money'], form['footnote'], datetime.now(),
                         quote_id)
 
-            # Clear rows in DB and add table rows by users
+            # Update table rows for this quotation
             db.execute("DELETE FROM quote_items WHERE quote_id = ?", quote_id)
             for name in request.form:
                 if 'row' in name:
@@ -236,7 +235,7 @@ def view_quote(quote_id):
 
 
 @app.route("/invoices", methods=['GET', 'POST'])
-@login_required
+@login_and_verification_required
 def invoices():
     if request.method == 'POST':
         invoice_id = request.form.get('id')
@@ -247,13 +246,16 @@ def invoices():
                 db.execute("DELETE FROM invoice WHERE id = ?", invoice_id)
                 return redirect(url_for('invoices'))
 
+            # Edit invoice name
             if request.form.get('edit'):
                 invoice_name = request.form.get('name')
                 db.execute("UPDATE invoice SET title = ?, last_saved = ? WHERE id = ?", invoice_name, datetime.now(), invoice_id)
 
+            # Duplicate invoice
             if request.form.get('copy'):
                 copy_sqlscripts('copyinvoice', 'copyinvoiceitems', invoice_id)
 
+            # Update invoice status
             if request.form.get('status'):
                 status_code = request.form.get('status')
                 if db.execute("SELECT * FROM status_code WHERE id = ?", status_code):
@@ -269,21 +271,20 @@ def invoices():
 
 
 @app.route("/invoices/create", methods=['POST'])
-@login_required
+@login_and_verification_required
 def create_invoice():
     if request.method == 'POST':
-        # Retrieve invoice name from form and create template invoice
+        # Create a template invoice with user info & quotation name
         invoice_name = request.form.get('invoice_name')
         userdata = db.execute("SELECT * FROM user WHERE id = ?", session['id'])[0]
         invoice_id = db.execute("INSERT INTO invoice (user_id, title, sender_name, sender_details) VALUES (?, ?, ?, ?)", userdata['id'], invoice_name, userdata['name'], userdata['details'])
         db.execute("INSERT INTO invoice_items (invoice_id, table_index, unit, rate) VALUES (?, ?, ?, ?)", invoice_id, '01', '1', '0.00')
 
-        # Pass in invoice id into url_for('view_invoice')
         return redirect(url_for('view_invoice', invoice_id=invoice_id))
 
 
 @app.route("/invoices/<int:invoice_id>", methods=['GET', 'POST'])
-@login_required
+@login_and_verification_required
 def view_invoice(invoice_id):
     # Validate if user is authorised to see this quote, otherwise go back to quote overview page
     user_id = db.execute("SELECT user_id FROM invoice WHERE id = ?", invoice_id)
@@ -291,7 +292,7 @@ def view_invoice(invoice_id):
         return redirect(url_for('invoices'))
 
     if request.method == 'POST':
-        # Update and submit form elements by user
+        # Update and submit details of invoice by user
         form = dict(request.form.items())
         db.execute("""UPDATE invoice
                       SET sender_name=?, sender_details=?, recipient_details=?, project_details=?, send_date=?, ref=?, due_date=?, total_money=?, footnote=?, last_saved=?
@@ -299,7 +300,7 @@ def view_invoice(invoice_id):
                       form['sender-name'], form['sender-details'], form['recipient-details'], form['project-details'], form['send-date'], form['ref'], form['due-date'], form['total-money'], form['footnote'], datetime.now(),
                       invoice_id)
 
-        # Clear rows in DB and add table rows by users
+        # Update table rows for this invoice
         db.execute("DELETE FROM invoice_items WHERE invoice_id = ?", invoice_id)
         for name in request.form:
             if 'row' in name:
@@ -324,12 +325,12 @@ def change_password():
     reset_form = ResetForm(request.form, prefix="reset_")
 
     if request.method == 'POST':
-        # Backend check for form validation (in the case where user's frontend is altered)
+        # Backend form validation
         if not reset_form.validate():
             flash("Please ensure valid input", "error")
             return render_template("changepassword.html", reset_form=reset_form)
 
-        # Check user inputs for current password and whether the two new passwords match
+        # Check user inputs for duplicate or invalid passwords
         user_pw = db.execute("SELECT password FROM user WHERE id = ?", session['id'])[0]['password']
 
         if not check_password_hash(user_pw, reset_form.old.data):
